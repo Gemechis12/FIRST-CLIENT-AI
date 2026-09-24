@@ -1,36 +1,105 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# FIRST CLIENT AI
 
-## Getting Started
+"You have the skill. We'll help you turn it into your first client."
 
-First, run the development server:
+A modern SaaS web application that helps beginner freelancers turn an existing skill into a clear freelance service, choose a niche, create an offer, build portfolio ideas, generate outreach messages, and create client proposals.
 
-```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
+## 1. Project Structure
+
+The project uses Next.js 15 (App Router), Tailwind CSS 4, Prisma, and NextAuth.
+
+```text
+ideas/
+├── prisma/
+│   └── schema.prisma        # Database schema
+├── src/
+│   ├── app/                 # Next.js App Router
+│   │   ├── api/             # API Routes (auth, register, etc.)
+│   │   ├── dashboard/       # Protected dashboard & tools
+│   │   ├── login/           # Login page
+│   │   ├── register/        # Registration page
+│   │   ├── globals.css      # Global styles & theme tokens
+│   │   ├── layout.tsx       # Root layout with SessionProvider
+│   │   └── page.tsx         # Landing page
+│   ├── components/          # Reusable UI components
+│   │   └── Providers.tsx    # NextAuth Provider wrapper
+│   ├── lib/                 # Utility functions & configs
+│   │   ├── auth.ts          # NextAuth configuration
+│   │   └── prisma.ts        # Prisma client singleton
+│   └── middleware.ts        # Route protection middleware
+├── .env                     # Environment variables
+├── package.json             # Dependencies
+└── tailwind.config.ts       # Tailwind configuration (if applicable)
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+## 2. Required Environment Variables
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+You need a `.env` file in the root of the project with the following variables:
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+```env
+# Database connection string (PostgreSQL)
+DATABASE_URL="postgresql://user:password@localhost:5432/firstclientai?schema=public"
 
-## Learn More
+# NextAuth Configuration
+NEXTAUTH_URL="http://localhost:3000"
+NEXTAUTH_SECRET="your-secure-random-secret-key-here"
 
-To learn more about Next.js, take a look at the following resources:
+# AI Provider API Key
+AI_API_KEY="your-ai-api-key-here"
+```
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+## 3. Database Setup Instructions
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+1. Ensure you have a PostgreSQL database running locally or use a cloud provider like Supabase/Neon.
+2. Update the `DATABASE_URL` in your `.env` file to match your database connection string.
+3. Run Prisma migrations to set up the schema:
+   ```bash
+   npx prisma db push
+   # or
+   npx prisma migrate dev --name init
+   ```
+4. Generate the Prisma client:
+   ```bash
+   npx prisma generate
+   ```
 
-## Deploy on Vercel
+## 4. Local Development Instructions
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+1. Install all dependencies:
+   ```bash
+   npm install
+   ```
+2. Start the local development server:
+   ```bash
+   npm run dev
+   ```
+3. Open `http://localhost:3000` in your browser.
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+## 5. Production Deployment Instructions
+
+1. Push your code to a GitHub repository.
+2. Create a new project on Vercel (or similar hosting provider).
+3. Connect your GitHub repository to Vercel.
+4. Add the required Environment Variables (`DATABASE_URL`, `NEXTAUTH_SECRET`, `NEXTAUTH_URL`, `AI_API_KEY`) in the Vercel project settings.
+5. Deploy the project. Vercel automatically detects Next.js projects and sets up the correct build commands.
+   - Build command: `npx prisma generate && next build`
+   - Install command: `npm install`
+
+## 6. List of Implemented Features
+
+- **Modern SaaS Landing Page**: Designed with a premium dark/white aesthetic, clean typography, and a clear user journey visualization.
+- **Authentication**: Fully functional secure registration and login using NextAuth with credentials (email/password encrypted via bcryptjs).
+- **Database Schema**: Complete Prisma schema for User profiles, Onboarding data, Services, Niches, Offers, Portfolio Projects, Outreach Messages, and Proposals.
+- **Protected Routing**: Middleware that secures the dashboard and onboarding routes.
+- **Dashboard UI**: A comprehensive dashboard layout with a sidebar (mobile responsive), progress tracking, and navigation.
+- **Skill -> Service Tool UI**: The first AI tool interface is fully built, featuring loading states and mock data generation to demonstrate the UI flow before connecting the real AI provider.
+
+## 7. List of Remaining Placeholder Features
+
+- **Real AI Integration**: The Service tool currently uses simulated mock responses. Needs to be connected to an AI API (e.g., OpenAI, Anthropic, Gemini) via the planned AI service layer.
+- **Niche Finder Tool**: UI placeholder created, needs full implementation.
+- **Offer Builder Tool**: UI placeholder created, needs full implementation.
+- **Portfolio Builder Tool**: UI placeholder created, needs full implementation.
+- **Outreach Generator Tool**: UI placeholder created, needs full implementation.
+- **Proposal Generator Tool**: UI placeholder created, needs full implementation.
+- **Onboarding Flow**: The multi-step onboarding process right after registration to populate the `Onboarding` model.
