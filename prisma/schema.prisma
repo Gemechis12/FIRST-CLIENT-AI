@@ -3,8 +3,9 @@ generator client {
 }
 
 datasource db {
-  provider = "sqlite"
+  provider = "postgresql"
   url      = env("DATABASE_URL")
+  directUrl = env("DIRECT_URL")
 }
 
 model Account {
@@ -41,10 +42,10 @@ model User {
   emailVerified DateTime?
   image         String?
   password      String?
-  
-  accounts      Account[]
-  sessions      Session[]
-  
+
+  accounts Account[]
+  sessions Session[]
+
   profile           UserProfile?
   onboarding        Onboarding?
   services          Service[]
@@ -58,21 +59,21 @@ model User {
   usage             AIUsage[]
   subscriptions     Subscription[]
 
-  plan          String    @default("FREE")
+  plan String @default("FREE")
 
-  createdAt     DateTime  @default(now())
-  updatedAt     DateTime  @updatedAt
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 }
 
 model AIUsage {
-  id        String   @id @default(cuid())
-  userId    String
-  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
-  
-  action    String   
-  count     Int      @default(0)
-  period    String   
-  
+  id     String @id @default(cuid())
+  userId String
+  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  action String
+  count  Int    @default(0)
+  period String
+
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
@@ -80,33 +81,33 @@ model AIUsage {
 }
 
 model Subscription {
-  id                     String   @id @default(cuid())
-  userId                 String
-  user                   User     @relation(fields: [userId], references: [id], onDelete: Cascade)
-  
-  plan                   String
-  status                 String   // ACTIVE, PAST_DUE, CANCELED, EXPIRED, INCOMPLETE
-  
-  provider               String?  // e.g., 'stripe', 'lemonsqueezy'
+  id     String @id @default(cuid())
+  userId String
+  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  plan   String
+  status String // ACTIVE, PAST_DUE, CANCELED, EXPIRED, INCOMPLETE
+
+  provider               String? // e.g., 'stripe', 'lemonsqueezy'
   providerCustomerId     String?
-  providerSubscriptionId String?  @unique
+  providerSubscriptionId String? @unique
   providerOrderId        String?
   providerStoreId        String?
   providerProductId      String?
   providerVariantId      String?
-  
-  currentPeriodStart     DateTime?
-  currentPeriodEnd       DateTime?
-  
-  cancelAtPeriodEnd      Boolean   @default(false)
-  canceledAt             DateTime?
-  endedAt                DateTime?
-  
+
+  currentPeriodStart DateTime?
+  currentPeriodEnd   DateTime?
+
+  cancelAtPeriodEnd Boolean   @default(false)
+  canceledAt        DateTime?
+  endedAt           DateTime?
+
   updatePaymentMethodUrl String?
   customerPortalUrl      String?
-  
-  createdAt              DateTime @default(now())
-  updatedAt              DateTime @updatedAt
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 }
 
 model VerificationToken {
@@ -118,143 +119,143 @@ model VerificationToken {
 }
 
 model UserProfile {
-  id        String   @id @default(cuid())
-  userId    String   @unique
-  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
-  
-  skill     String?
-  bio       String?
-  
+  id     String @id @default(cuid())
+  userId String @unique
+  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  skill String?
+  bio   String?
+
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 }
 
 model Onboarding {
-  id                String   @id @default(cuid())
-  userId            String   @unique
-  user              User     @relation(fields: [userId], references: [id], onDelete: Cascade)
-  
-  skill             String
-  experienceLevel   String   // Beginner, Some experience, Experienced
-  hasClientsBefore  Boolean
+  id     String @id @default(cuid())
+  userId String @unique
+  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  skill              String
+  experienceLevel    String // Beginner, Some experience, Experienced
+  hasClientsBefore   Boolean
   interestedServices String?
-  targetClients     String?
-  currency          String   @default("USD")
-  mainGoal          String?
-  
-  isCompleted       Boolean  @default(false)
-  
-  createdAt         DateTime @default(now())
-  updatedAt         DateTime @updatedAt
+  targetClients      String?
+  currency           String  @default("USD")
+  mainGoal           String?
+
+  isCompleted Boolean @default(false)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 }
 
 model Progress {
-  id        String   @id @default(cuid())
-  userId    String   @unique
-  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
-  
-  hasSkill            Boolean @default(false)
-  hasService          Boolean @default(false)
-  hasNiche            Boolean @default(false)
-  hasOffer            Boolean @default(false)
-  hasPortfolio        Boolean @default(false)
-  hasProspects        Boolean @default(false)
-  hasOutreach         Boolean @default(false)
-  hasProposal         Boolean @default(false)
-  hasFirstClient      Boolean @default(false)
-  
-  percentage          Int     @default(0)
-  
+  id     String @id @default(cuid())
+  userId String @unique
+  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  hasSkill       Boolean @default(false)
+  hasService     Boolean @default(false)
+  hasNiche       Boolean @default(false)
+  hasOffer       Boolean @default(false)
+  hasPortfolio   Boolean @default(false)
+  hasProspects   Boolean @default(false)
+  hasOutreach    Boolean @default(false)
+  hasProposal    Boolean @default(false)
+  hasFirstClient Boolean @default(false)
+
+  percentage Int @default(0)
+
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 }
 
 model Service {
-  id          String   @id @default(cuid())
-  userId      String
-  user        User     @relation(fields: [userId], references: [id], onDelete: Cascade)
-  
-  title       String
-  description String?
-  targetClients String?
-  problemsSolved String?
-  deliverables  String?
+  id     String @id @default(cuid())
+  userId String
+  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  title              String
+  description        String?
+  targetClients      String?
+  problemsSolved     String?
+  deliverables       String?
   isBeginnerFriendly Boolean @default(true)
-  
-  isSelected  Boolean  @default(false)
-  
-  createdAt   DateTime @default(now())
-  updatedAt   DateTime @updatedAt
+
+  isSelected Boolean @default(false)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 }
 
 model Niche {
-  id          String   @id @default(cuid())
-  userId      String
-  user        User     @relation(fields: [userId], references: [id], onDelete: Cascade)
-  
-  name        String
-  whyTheyNeed String?
+  id     String @id @default(cuid())
+  userId String
+  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  name           String
+  whyTheyNeed    String?
   commonProblems String?
   exampleClients String?
-  opportunity String?
-  
-  isSelected  Boolean  @default(false)
-  
-  createdAt   DateTime @default(now())
-  updatedAt   DateTime @updatedAt
+  opportunity    String?
+
+  isSelected Boolean @default(false)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 }
 
 model Offer {
-  id          String   @id @default(cuid())
-  userId      String
-  user        User     @relation(fields: [userId], references: [id], onDelete: Cascade)
-  
-  headline    String
+  id     String @id @default(cuid())
+  userId String
+  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  headline       String
   targetCustomer String?
-  problem     String?
-  solution    String?
-  deliverables String?
-  timeline    String?
+  problem        String?
+  solution       String?
+  deliverables   String?
+  timeline       String?
   revisionPolicy String?
-  
+
   // Package structure stored as JSON string
   packagesData String?
-  
-  proposals    Proposal[]
-  
-  createdAt   DateTime @default(now())
-  updatedAt   DateTime @updatedAt
+
+  proposals Proposal[]
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 }
 
 model PortfolioProject {
-  id          String   @id @default(cuid())
-  userId      String
-  user        User     @relation(fields: [userId], references: [id], onDelete: Cascade)
-  
-  title               String
-  practiceClient      String
-  industry            String?
-  background          String?
-  problem             String?
-  goal                String?
-  targetAudience      String?
-  creativeDirection   String?
-  deliverables        String?
-  suggestedTools      String?
-  successCriteria     String?
+  id     String @id @default(cuid())
+  userId String
+  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  title                String
+  practiceClient       String
+  industry             String?
+  background           String?
+  problem              String?
+  goal                 String?
+  targetAudience       String?
+  creativeDirection    String?
+  deliverables         String?
+  suggestedTools       String?
+  successCriteria      String?
   portfolioDescription String?
-  
-  isPracticeProject   Boolean  @default(true)
-  
-  createdAt   DateTime @default(now())
-  updatedAt   DateTime @updatedAt
+
+  isPracticeProject Boolean @default(true)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 }
 
 model Prospect {
-  id              String   @id @default(cuid())
-  userId          String
-  user            User     @relation(fields: [userId], references: [id], onDelete: Cascade)
-  
+  id     String @id @default(cuid())
+  userId String
+  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+
   name            String
   industry        String?
   website         String?
@@ -265,43 +266,43 @@ model Prospect {
   contactEmail    String?
   observedProblem String?
   notes           String?
-  status          String   @default("New") // New, Contacted, Replied, Interested, Proposal Sent, Won, Not Interested
-  
+  status          String  @default("New") // New, Contacted, Replied, Interested, Proposal Sent, Won, Not Interested
+
   outreachMessages OutreachMessage[]
   proposals        Proposal[]
-  
-  createdAt       DateTime @default(now())
-  updatedAt       DateTime @updatedAt
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 }
 
 model OutreachMessage {
-  id          String   @id @default(cuid())
-  userId      String
-  user        User     @relation(fields: [userId], references: [id], onDelete: Cascade)
-  
-  prospectId  String
-  prospect    Prospect @relation(fields: [prospectId], references: [id], onDelete: Cascade)
-  
+  id     String @id @default(cuid())
+  userId String
+  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  prospectId String
+  prospect   Prospect @relation(fields: [prospectId], references: [id], onDelete: Cascade)
+
   messageType String
   platform    String?
   content     String
   subject     String?
-  
-  createdAt   DateTime @default(now())
-  updatedAt   DateTime @updatedAt
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 }
 
 model Proposal {
-  id                 String   @id @default(cuid())
-  userId             String
-  user               User     @relation(fields: [userId], references: [id], onDelete: Cascade)
-  
-  prospectId         String?
-  prospect           Prospect? @relation(fields: [prospectId], references: [id], onDelete: SetNull)
+  id     String @id @default(cuid())
+  userId String
+  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
 
-  offerId            String?
-  offer              Offer?    @relation(fields: [offerId], references: [id], onDelete: SetNull)
-  
+  prospectId String?
+  prospect   Prospect? @relation(fields: [prospectId], references: [id], onDelete: SetNull)
+
+  offerId String?
+  offer   Offer?  @relation(fields: [offerId], references: [id], onDelete: SetNull)
+
   title              String?
   projectDescription String?
   service            String?
@@ -310,11 +311,11 @@ model Proposal {
   price              String?
   currency           String?
   paymentTerms       String?
-  
-  content            String?  // The generated full proposal content
-  
-  status             String   @default("Draft") // Draft, Ready, Sent, Accepted, Declined
-  
-  createdAt          DateTime @default(now())
-  updatedAt          DateTime @updatedAt
+
+  content String? // The generated full proposal content
+
+  status String @default("Draft") // Draft, Ready, Sent, Accepted, Declined
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 }
